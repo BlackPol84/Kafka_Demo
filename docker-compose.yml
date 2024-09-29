@@ -1,21 +1,22 @@
-version: '1.0'
+version: '4.32.0'
 
 services:
 
   postgres:
     image: postgres:11.13
-    container_name: t1_java_demo
+    container_name: postgres_db
     ports:
-      - "5432:5432"
+      - 5432:5432
     environment:
+      - POSTGRES_DB=t1_demo
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=0000
+      - POSTGRES_PASSWORD=1234
   zookeeper_t1:
     image: confluentinc/cp-zookeeper:5.5.0
     hostname: zookeeper_t1
     container_name: zookeeper_t1
     ports:
-      - "2182:2182"
+      - 2182:2182
     environment:
       ZOOKEEPER_CLIENT_PORT: 2182
       ZOOKEEPER_TICK_TIME: 2000
@@ -26,8 +27,8 @@ services:
     depends_on:
       - zookeeper_t1
     ports:
-      - "29092:29092"
-      - "9092:9092"
+      - 29092:29092
+      - 9092:9092
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper_t1:2182'
@@ -37,3 +38,15 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka_ui
+    ports:
+      - 18080:8080
+    depends_on:
+      - broker_t1
+      - zookeeper_t1
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: broker_t1:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper_t1:2181

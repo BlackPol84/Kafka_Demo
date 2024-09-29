@@ -35,7 +35,7 @@ public class ClientServiceImpl implements ClientService {
     public List<ClientDto> parseJson() {
         ObjectMapper mapper = new ObjectMapper();
 
-        ClientDto[] clients = new ClientDto[0];
+        ClientDto[] clients;
         try {
             clients = mapper.readValue(new File("src/main/resources/MOCK_DATA.json"), ClientDto[].class);
         } catch (IOException e) {

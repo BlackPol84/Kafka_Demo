@@ -21,7 +21,7 @@ public class ClientController {
 
     private final ClientService clientService;
     private final KafkaClientProducer kafkaClientProducer;
-    @Value("${t1.kafka.topic.client_registration}")
+    @Value("${spring.kafka.topic.client_registration}")
     private String topic;
 
     @LogException

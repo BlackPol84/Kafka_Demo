@@ -30,19 +30,19 @@ import java.util.Map;
 @Configuration
 public class KafkaConfig {
 
-    @Value("${t1.kafka.consumer.group-id}")
+    @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
-    @Value("${t1.kafka.bootstrap.server}")
+    @Value("${spring.kafka.bootstrap-servers}")
     private String servers;
-    @Value("${t1.kafka.session.timeout.ms:15000}")
+    @Value("${spring.kafka.session.timeout.ms}")
     private String sessionTimeout;
-    @Value("${t1.kafka.max.partition.fetch.bytes:300000}")
+    @Value("${spring.kafka.max.partition.fetch.bytes}")
     private String maxPartitionFetchBytes;
-    @Value("${t1.kafka.max.poll.records:1}")
+    @Value("${spring.kafka.consumer.max.poll.records}")
     private String maxPollRecords;
-    @Value("${t1.kafka.max.poll.interval.ms:3000}")
+    @Value("${spring.kafka.consumer.max.poll.interval.ms}")
     private String maxPollIntervalsMs;
-    @Value("${t1.kafka.topic.client_id_registered}")
+    @Value("${spring.kafka.topic.client_id_registered}")
     private String clientTopic;
 
 
@@ -61,7 +61,6 @@ public class KafkaConfig {
         props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords);
         props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, maxPollIntervalsMs);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.FALSE);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, MessageDeserializer.class.getName());
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, MessageDeserializer.class);
@@ -92,9 +91,9 @@ public class KafkaConfig {
     private CommonErrorHandler errorHandler() {
         DefaultErrorHandler handler = new DefaultErrorHandler(new FixedBackOff(1000, 3));
         handler.addNotRetryableExceptions(IllegalStateException.class);
-        handler.setRetryListeners((record, ex, deliveryAttempt) -> {
-            log.error(" RetryListeners message = {}, offset = {} deliveryAttempt = {}", ex.getMessage(), record.offset(), deliveryAttempt);
-        });
+        handler.setRetryListeners((record, ex, deliveryAttempt) ->
+                log.error(" RetryListeners message = {}, offset = {} deliveryAttempt = {}",
+                        ex.getMessage(), record.offset(), deliveryAttempt));
         return handler;
     }
 
@@ -104,7 +103,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(value = "t1.kafka.producer.enable",
+    @ConditionalOnProperty(prefix = "spring", name = "kafka.producer.enable",
             havingValue = "true",
             matchIfMissing = true)
     public KafkaClientProducer producerClient(@Qualifier("client") KafkaTemplate template) {
