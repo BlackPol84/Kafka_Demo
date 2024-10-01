@@ -13,6 +13,12 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
         <sqlFile encoding="utf8" path="/db/changelog/2024/09/16-01-changelog-02.sql"/>
         <rollback/>
     </changeSet>
+
+    <changeSet id="create-account" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/01-10-changelog-03.sql"/>
+        <rollback/>
+    </changeSet>
+
     <changeSet id="1727272690521-1" author="e_cha (generated)">
         <createSequence incrementBy="50" sequenceName="transaction_seq" startValue="1"/>
     </changeSet>
@@ -26,5 +32,8 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
         </createTable>
     </changeSet>
 
-
+    <changeSet id="update-transaction" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/01-10-changelog-04.sql"/>
+        <rollback/>
+    </changeSet>
 </databaseChangeLog>
