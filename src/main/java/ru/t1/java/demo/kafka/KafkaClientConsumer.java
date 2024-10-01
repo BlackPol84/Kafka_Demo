@@ -41,8 +41,6 @@ public class KafkaClientConsumer {
         } finally {
             ack.acknowledge();
         }
-
-
         log.debug("Client consumer: записи обработаны");
     }
 }
