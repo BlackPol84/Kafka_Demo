@@ -20,7 +20,7 @@ spring:
       group-id: t1-demo
       max:
         poll:
-          records: 10
+          records: 1
           interval:
             ms: 3000
 

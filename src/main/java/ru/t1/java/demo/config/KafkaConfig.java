@@ -42,6 +42,8 @@ public class KafkaConfig {
     private String maxPollRecords;
     @Value("${spring.kafka.consumer.max.poll.interval.ms}")
     private String maxPollIntervalsMs;
+    @Value("${spring.kafka.listener.poll.timeout}")
+    private Long listenerPollTimeout;
     @Value("${spring.kafka.topic.client_id_registered}")
     private String clientTopic;
 
@@ -83,7 +85,7 @@ public class KafkaConfig {
         factory.setBatchListener(true);
         factory.setConcurrency(1);
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        factory.getContainerProperties().setPollTimeout(5000);
+        factory.getContainerProperties().setPollTimeout(listenerPollTimeout);
         factory.getContainerProperties().setMicrometerEnabled(true);
         factory.setCommonErrorHandler(errorHandler());
     }
