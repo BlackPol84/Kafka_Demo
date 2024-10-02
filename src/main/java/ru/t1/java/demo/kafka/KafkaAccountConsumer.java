@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.t1.java.demo.mapper.AccountMapper;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.dto.AccountDto;
-import ru.t1.java.demo.service.AccountService;
+import ru.t1.java.demo.service.impl.AccountServiceImpl;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
 @Component
 public class KafkaAccountConsumer {
 
-    private final AccountService service;
+    private final AccountServiceImpl service;
     private final AccountMapper mapper;
 
     @KafkaListener(id = "${spring.kafka.consumer.group-id-account}",

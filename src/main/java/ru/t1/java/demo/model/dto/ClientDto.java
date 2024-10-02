@@ -17,6 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ClientDto {
 
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("first_name")
     private String firstName;
 

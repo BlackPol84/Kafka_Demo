@@ -8,6 +8,7 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import ru.t1.java.demo.aop.Metric;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.service.ClientService;
@@ -22,6 +23,7 @@ public class KafkaClientConsumer {
 
     private final ClientService clientService;
 
+    @Metric
     @KafkaListener(id = "${spring.kafka.consumer.group-id}",
             topics = "${spring.kafka.topic.client_registration}",
             containerFactory = "kafkaListenerContainerFactory")

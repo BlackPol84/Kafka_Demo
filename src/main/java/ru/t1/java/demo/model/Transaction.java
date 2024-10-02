@@ -18,9 +18,9 @@ public class Transaction extends AbstractPersistable<Long> {
 
     @OneToOne
     @JoinColumn(name = "client_id", referencedColumnName = "id")
-    private Client clientId;
+    private Client client;
 
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
-    private Account accountId;
+    private Account account;
 }
