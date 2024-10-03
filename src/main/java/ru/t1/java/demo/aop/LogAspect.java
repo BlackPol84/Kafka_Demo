@@ -33,12 +33,6 @@ public class LogAspect {
 //        log.error("ASPECT BEFORE: Call method: {}", joinPoint.getSignature().getName());
 //    }
 
-    @AfterThrowing(pointcut = "@annotation(LogException)")
-    @Order(0)
-    public void logExceptionAnnotation(JoinPoint joinPoint) {
-        System.err.println("ASPECT EXCEPTION ANNOTATION: Logging exception: {}" + joinPoint.getSignature().getName());
-    }
-
     @AfterReturning(
             pointcut = "@annotation(HandlingResult)",
             returning = "result")
