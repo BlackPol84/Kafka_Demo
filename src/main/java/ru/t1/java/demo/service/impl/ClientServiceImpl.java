@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.kafka.KafkaClientProducer;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.dto.ClientDto;
@@ -31,6 +32,7 @@ public class ClientServiceImpl implements ClientService {
                 .forEach(kafkaClientProducer::send);
     }
 
+    @LogException
     @Override
     public List<ClientDto> parseJson() {
         ObjectMapper mapper = new ObjectMapper();

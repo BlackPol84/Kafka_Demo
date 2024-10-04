@@ -4,15 +4,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
-    <changeSet id="init" author="ECHasov">
-        <sqlFile encoding="utf8" path="/db/changelog/2024/09/16-01-changelog-01.sql"/>
+    <changeSet id="create-client" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/01-10-changelog-01.sql"/>
         <rollback/>
     </changeSet>
 
-    <changeSet id="update-client" author="ECHasov">
-        <sqlFile encoding="utf8" path="/db/changelog/2024/09/16-01-changelog-02.sql"/>
+    <changeSet id="create-account" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/01-10-changelog-02.sql"/>
         <rollback/>
     </changeSet>
+
     <changeSet id="1727272690521-1" author="e_cha (generated)">
         <createSequence incrementBy="50" sequenceName="transaction_seq" startValue="1"/>
     </changeSet>
@@ -26,5 +27,8 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
         </createTable>
     </changeSet>
 
-
+    <changeSet id="update-transaction" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/01-10-changelog-03.sql"/>
+        <rollback/>
+    </changeSet>
 </databaseChangeLog>

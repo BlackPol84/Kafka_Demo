@@ -3,30 +3,28 @@ package ru.t1.java.demo.model.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.t1.java.demo.util.AccountType;
 
-/**
- * DTO for {@link ru.t1.java.demo.model.Client}
- */
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
-public class ClientDto {
+public class AccountDto {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("first_name")
-    private String firstName;
+    @JsonProperty("client_id")
+    private Long clientId;
 
-    @JsonProperty("last_name")
-    private String lastName;
+    @JsonProperty("account_type")
+    private AccountType type;
 
-    @JsonProperty("middle_name")
-    private String middleName;
+    @JsonProperty("balance")
+    private BigDecimal balance;
 
 }

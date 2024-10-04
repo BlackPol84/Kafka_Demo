@@ -18,6 +18,8 @@ spring:
 
     consumer:
       group-id: t1-demo
+      group-id-account: group-2
+      group-id-transaction: group-3
       max:
         poll:
           records: 1
@@ -30,7 +32,10 @@ spring:
     topic:
       client_registration: t1_demo_client_registration
       client_id_registered: t1_demo_client_registered
+      client_account: t1_demo_client_account
       client_transactions: t1_demo_client_transactions
+      metric_trace: t1_demo_metric_trace
+      error_trace: t1_demo_error_trace
 
     listener:
       poll:
@@ -39,6 +44,10 @@ spring:
      partition:
       fetch:
         bytes: 300000
+
+  metric:
+    execution:
+      time: 10
 
 logging:
   level:

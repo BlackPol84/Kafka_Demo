@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.LogException;
-import ru.t1.java.demo.aop.Track;
+import ru.t1.java.demo.aop.Metric;
 import ru.t1.java.demo.kafka.KafkaClientProducer;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.service.ClientService;
@@ -25,14 +25,11 @@ public class ClientController {
     private String topic;
 
     @LogException
-    @Track
+    @Metric
     @GetMapping(value = "/parse")
     @HandlingResult
     public void parseSource() {
         List<ClientDto> clientDtos = clientService.parseJson();
-        clientDtos.forEach(dto -> {
-            kafkaClientProducer.sendTo(topic, dto);
-        });
+        clientDtos.forEach(dto -> kafkaClientProducer.sendTo(topic, dto));
     }
-
 }
