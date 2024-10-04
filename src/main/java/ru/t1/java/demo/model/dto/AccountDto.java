@@ -7,11 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.t1.java.demo.util.AccountType;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AccountDto {
+
+    @JsonProperty("id")
+    private Long id;
 
     @JsonProperty("client_id")
     private Long clientId;
@@ -20,6 +25,6 @@ public class AccountDto {
     private AccountType type;
 
     @JsonProperty("balance")
-    private Double balance;
+    private BigDecimal balance;
 
 }

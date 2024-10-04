@@ -7,6 +7,7 @@ import ru.t1.java.demo.model.dto.ClientDto;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE,
         componentModel = "spring")
 public interface ClientMapper {
+
     Client toEntity(ClientDto clientDto);
 
     ClientDto toDto(Client client);

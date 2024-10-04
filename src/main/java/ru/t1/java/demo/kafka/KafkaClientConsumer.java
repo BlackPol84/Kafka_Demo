@@ -22,6 +22,7 @@ import java.util.List;
 public class KafkaClientConsumer {
 
     private final ClientService clientService;
+    private final ru.t1.java.demo.mapper.ClientMapper mapper;
 
     @Metric
     @KafkaListener(id = "${spring.kafka.consumer.group-id}",
@@ -34,11 +35,7 @@ public class KafkaClientConsumer {
 
         try {
             List<Client> clients = messageList.stream()
-                    .map(dto -> {
-                        dto.setFirstName(key + "@" + dto.getFirstName());
-                        return ClientMapper.toEntity(dto);
-                    })
-                    .toList();
+                    .map(mapper::toEntity).toList();
             clientService.registerClients(clients);
         } finally {
             ack.acknowledge();
