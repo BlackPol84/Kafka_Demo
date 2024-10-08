@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import ru.t1.java.demo.model.dto.ClientDto;
 
 import java.util.UUID;
 
@@ -12,7 +13,8 @@ import java.util.UUID;
 @Component
 public class KafkaClientProducer {
 
-    private final KafkaTemplate template;
+    private final KafkaTemplate<String, Long> template;
+    private final KafkaTemplate<String, ClientDto> clientKafkaTemplate;
 
     public void send(Long id) {
         try {
@@ -23,10 +25,10 @@ public class KafkaClientProducer {
         }
     }
 
-    public void sendTo(String topic, Object o) {
+    public void sendTo(String topic, ClientDto dto) {
         try {
-            template.send(topic, o).get();
-            template.flush();
+            clientKafkaTemplate.send(topic, dto).get();
+            clientKafkaTemplate.flush();
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
         }

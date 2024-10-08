@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class KafkaMetricProducer {
 
-    private final KafkaTemplate template;
+    private final KafkaTemplate<String, Object> template;
 
     public void sendTo(String topic, Object o) {
         try {

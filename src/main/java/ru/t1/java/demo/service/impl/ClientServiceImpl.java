@@ -39,7 +39,8 @@ public class ClientServiceImpl implements ClientService {
 
         ClientDto[] clients;
         try {
-            clients = mapper.readValue(new File("src/main/resources/MOCK_DATA.json"), ClientDto[].class);
+            clients = mapper.readValue(new File("src/main/resources/MOCK_DATA.json"),
+                    ClientDto[].class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
