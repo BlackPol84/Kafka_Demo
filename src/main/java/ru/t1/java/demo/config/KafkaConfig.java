@@ -53,7 +53,6 @@ public class KafkaConfig {
     @Value("${spring.kafka.topic.client_id_registered}")
     private String clientTopic;
 
-
     @Bean
     public ConsumerFactory<String, ClientDto> consumerListenerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -174,21 +173,40 @@ public class KafkaConfig {
         return handler;
     }
 
-    @Bean("client")
-    public KafkaTemplate<String, ClientDto> kafkaTemplate(ProducerFactory<String, ClientDto> producerPatFactory) {
-        return new KafkaTemplate<>(producerPatFactory);
+    @Bean("idClient")
+    public KafkaTemplate<String, Long> kafkaTemplate
+            (ProducerFactory<String, Long> producerIdClientFactory) {
+        return new KafkaTemplate<>(producerIdClientFactory);
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "spring", name = "kafka.producer.enable",
+    @ConditionalOnProperty(name = "spring.kafka.producer.enable",
             havingValue = "true",
             matchIfMissing = true)
-    public KafkaClientProducer producerClient(@Qualifier("client") KafkaTemplate template) {
+    public KafkaClientProducer producerClient(@Qualifier("idClient")
+                                                  KafkaTemplate<String, Long> template,
+                                              @Qualifier("client") KafkaTemplate<String, ClientDto> clientKafkaTemplate) {
         template.setDefaultTopic(clientTopic);
-        return new KafkaClientProducer(template);
+        return new KafkaClientProducer(template, clientKafkaTemplate);
     }
 
-    @Bean
+    @Bean("idFactory")
+    public ProducerFactory<String, Long> producerIdClientFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+
+    @Bean("client")
+    public KafkaTemplate<String, ClientDto> clientKafkaTemplate
+            (ProducerFactory<String, ClientDto> producerClientFactory) {
+        return new KafkaTemplate<>(producerClientFactory);
+    }
+
+    @Bean("clientFactory")
     public ProducerFactory<String, ClientDto> producerClientFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
@@ -198,4 +216,35 @@ public class KafkaConfig {
         return new DefaultKafkaProducerFactory<>(props);
     }
 
+    @Bean("metric")
+    public KafkaTemplate<String, Object> metricKafkaTemplate
+            (@Qualifier("metricFactory") ProducerFactory<String, Object> producerFactory) {
+        return new KafkaTemplate<>(producerFactory);
+    }
+
+    @Bean("metricFactory")
+    public ProducerFactory<String, Object> producerMetricFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+        return new DefaultKafkaProducerFactory<>(props);
+    }
+
+    @Bean("exception")
+    public KafkaTemplate<String, String> exceptionKafkaTemplate
+            (@Qualifier("exceptionFactory") ProducerFactory<String, String> producerExceptionFactory) {
+        return new KafkaTemplate<>(producerExceptionFactory);
+    }
+
+    @Bean("exceptionFactory")
+    public ProducerFactory<String, String> producerExceptionFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+        return new DefaultKafkaProducerFactory<>(props);
+    }
 }

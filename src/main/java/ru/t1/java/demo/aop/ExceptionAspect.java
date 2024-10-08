@@ -20,7 +20,7 @@ public class ExceptionAspect {
     @Value("${spring.kafka.topic.error_trace}")
     private String metricTopic;
 
-    private final KafkaTemplate template;
+    private final KafkaTemplate<String, String> exceptionTemplate;
 
     @AfterThrowing(pointcut = "@annotation(LogException)", throwing = "ex")
     public void logException(JoinPoint joinPoint, Throwable ex) {
@@ -34,6 +34,6 @@ public class ExceptionAspect {
                         "Exception: %s. Stack trace: %s",
                 methodName, methodParams, ex.getMessage(), stackTraceString);
 
-        template.send(metricTopic, message);
+        exceptionTemplate.send(metricTopic, message);
     }
 }
