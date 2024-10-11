@@ -23,6 +23,7 @@ public class Account {
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "account_type")
     private AccountType type;
 

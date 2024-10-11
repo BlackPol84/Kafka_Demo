@@ -29,6 +29,7 @@ public class KafkaClientProducer {
         try {
             clientKafkaTemplate.send(topic, dto).get();
             clientKafkaTemplate.flush();
+            log.debug("dto send: {}", dto.getId());
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
         }

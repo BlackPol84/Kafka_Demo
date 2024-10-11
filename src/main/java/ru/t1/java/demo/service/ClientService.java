@@ -9,4 +9,6 @@ public interface ClientService {
     void registerClients(List<Client> clients);
 
     List<ClientDto> parseJson();
+
+    ClientDto create(ClientDto clientDto);
 }
