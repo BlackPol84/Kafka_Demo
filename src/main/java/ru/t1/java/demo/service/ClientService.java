@@ -10,5 +10,4 @@ public interface ClientService {
 
     List<ClientDto> parseJson();
 
-    ClientDto create(ClientDto clientDto);
 }

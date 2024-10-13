@@ -49,12 +49,4 @@ public class ClientServiceImpl implements ClientService {
 
         return Arrays.asList(clients);
     }
-
-    public ClientDto create(ClientDto clientDto) {
-
-        Client client = ClientMapper.toEntity(clientDto);
-        Client savedClient = repository.save(client);
-
-        return ClientMapper.toDto(savedClient);
-    }
 }

@@ -29,4 +29,10 @@ public class Account {
 
     @Column(name = "balance")
     private BigDecimal balance;
+
+    @Column(name = "blocking")
+    private boolean isBlocked;
+
+    @Column(name = "credit_limit")
+    private BigDecimal creditLimit;
 }

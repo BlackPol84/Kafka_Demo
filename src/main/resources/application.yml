@@ -49,6 +49,10 @@ spring:
     execution:
       time: 10
 
+security:
+  token: eijveo849357vcuvn3490isdjfu09dfj309msdfgl433vdkfjne4343jn
+  expiration: 86400000
+
 logging:
   level:
     ROOT: INFO

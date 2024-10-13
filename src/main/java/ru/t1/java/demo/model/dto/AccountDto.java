@@ -2,6 +2,7 @@ package ru.t1.java.demo.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,11 @@ public class AccountDto {
 
     @JsonProperty("balance")
     private BigDecimal balance;
+
+    @JsonProperty("blocking")
+    private boolean isBlocked;
+
+    @JsonProperty("credit_limit")
+    private BigDecimal creditLimit;
 
 }
