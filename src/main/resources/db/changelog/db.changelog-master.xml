@@ -27,8 +27,39 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
         </createTable>
     </changeSet>
 
-    <changeSet id="update-transaction" author="PolOrlov">
+    <changeSet id="update-transaction-1" author="PolOrlov">
         <sqlFile encoding="utf8" path="/db/changelog/2024/10/01-10-changelog-03.sql"/>
         <rollback/>
     </changeSet>
+
+    <changeSet id="update-transaction-2" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/10-10-changelog-04.sql"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="update-account-1" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/10-10-changelog-05.sql"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="create-role" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/12-10-changelog-06.sql"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="create-users" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/12-10-changelog-07.sql"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="create-user_roles" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/12-10-changelog-08.sql"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="init_roles" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/12-10-changelog-09.sql"/>
+        <rollback/>
+    </changeSet>
+
 </databaseChangeLog>

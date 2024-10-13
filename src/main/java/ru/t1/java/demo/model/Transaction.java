@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.AbstractPersistable;
+import ru.t1.java.demo.util.TransactionType;
 
 import java.math.BigDecimal;
 
@@ -23,4 +24,8 @@ public class Transaction extends AbstractPersistable<Long> {
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type")
+    private TransactionType transactionType;
 }

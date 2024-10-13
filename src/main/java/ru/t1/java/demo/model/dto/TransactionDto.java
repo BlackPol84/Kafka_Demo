@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.t1.java.demo.util.TransactionType;
 
 import java.math.BigDecimal;
 
@@ -22,4 +23,7 @@ public class TransactionDto {
 
     @JsonProperty("account_id")
     private Long accountId;
+
+    @JsonProperty("transaction_type")
+    private TransactionType transactionType;
 }

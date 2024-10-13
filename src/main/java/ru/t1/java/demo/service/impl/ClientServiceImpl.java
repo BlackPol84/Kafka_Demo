@@ -10,6 +10,7 @@ import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.service.ClientService;
+import ru.t1.java.demo.util.ClientMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository repository;
     private final KafkaClientProducer kafkaClientProducer;
+    private final ClientMapper mapper;
 
     @Override
     public void registerClients(List<Client> clients) {

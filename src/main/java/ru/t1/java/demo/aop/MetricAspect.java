@@ -29,7 +29,7 @@ public class MetricAspect {
 
     @Around("@annotation(ru.t1.java.demo.aop.Metric)")
     public Object measureWorkingTime(ProceedingJoinPoint pJoinPoint) {
-        log.info("Вызов метода: {}", pJoinPoint.getSignature().toShortString());
+        log.debug("Вызов метода: {}", pJoinPoint.getSignature().toShortString());
         long beforeTime = System.currentTimeMillis();
         Object result = null;
         try {

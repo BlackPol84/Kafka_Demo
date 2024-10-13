@@ -4,15 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import ru.t1.java.demo.aop.Metric;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.service.ClientService;
-import ru.t1.java.demo.util.ClientMapper;
 
 import java.util.List;
 
@@ -29,16 +26,17 @@ public class KafkaClientConsumer {
             topics = "${spring.kafka.topic.client_registration}",
             containerFactory = "kafkaListenerContainerFactory")
     public void listener(@Payload List<ClientDto> messageList,
-                         Acknowledgment ack,
-                         @Header(KafkaHeaders.RECEIVED_KEY) String key) {
+                         Acknowledgment ack) {
         log.debug("Client consumer: Обработка новых сообщений");
 
         try {
             List<Client> clients = messageList.stream()
                     .map(mapper::toEntity).toList();
             clientService.registerClients(clients);
-        } finally {
+
             ack.acknowledge();
+        } catch (Exception ex) {
+            log.error("Ошибка обработки сообщений: ", ex);
         }
         log.debug("Client consumer: записи обработаны");
     }

@@ -6,10 +6,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import ru.t1.java.demo.mapper.TransactionMapper;
-import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.model.dto.TransactionDto;
-import ru.t1.java.demo.service.impl.TransactionServiceImpl;
+import ru.t1.java.demo.service.TransactionService;
 
 import java.util.List;
 
@@ -18,8 +16,7 @@ import java.util.List;
 @Component
 public class KafkaTransactionConsumer {
 
-    private final TransactionServiceImpl service;
-    private final TransactionMapper mapper;
+    private final TransactionService service;
 
     @KafkaListener(id = "${spring.kafka.consumer.group-id-transaction}",
             topics = "${spring.kafka.topic.client_transactions}",
@@ -29,12 +26,10 @@ public class KafkaTransactionConsumer {
         log.debug("Transaction consumer: Обработка новых сообщений");
 
         try {
-            List<Transaction> transactions = messageList.stream()
-                    .map(mapper::toEntity)
-                    .toList();
-            service.registerTransaction(transactions);
-        } finally {
+            service.registerTransaction(messageList);
             ack.acknowledge();
+        } catch (Exception ex) {
+            log.error("Ошибка обработки сообщений: ", ex);
         }
         log.debug("Transaction consumer: записи обработаны");
     }

@@ -23,9 +23,16 @@ public class Account {
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private Client client;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "account_type")
     private AccountType type;
 
     @Column(name = "balance")
     private BigDecimal balance;
+
+    @Column(name = "blocking")
+    private boolean isBlocked;
+
+    @Column(name = "credit_limit")
+    private BigDecimal creditLimit;
 }

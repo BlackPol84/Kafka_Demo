@@ -247,4 +247,20 @@ public class KafkaConfig {
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
         return new DefaultKafkaProducerFactory<>(props);
     }
+
+    @Bean("transaction")
+    public KafkaTemplate<String, TransactionDto> transactionKafkaTemplate
+            (@Qualifier("transactionFactory") ProducerFactory<String, TransactionDto> producerTransactionFactory) {
+        return new KafkaTemplate<>(producerTransactionFactory);
+    }
+
+    @Bean("transactionFactory")
+    public ProducerFactory<String, TransactionDto> producerTransactionFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+        return new DefaultKafkaProducerFactory<>(props);
+    }
 }
