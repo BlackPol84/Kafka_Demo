@@ -50,8 +50,6 @@ public class KafkaConfig {
     private String maxPollIntervalsMs;
     @Value("${spring.kafka.listener.poll.timeout}")
     private Long listenerPollTimeout;
-    @Value("${spring.kafka.topic.client_id_registered}")
-    private String clientTopic;
 
     @Bean
     public ConsumerFactory<String, ClientDto> consumerListenerFactory() {

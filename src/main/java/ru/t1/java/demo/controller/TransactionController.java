@@ -15,7 +15,7 @@ import ru.t1.java.demo.model.dto.TransactionDto;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/bank/transactions")
+@RequestMapping("/transactions")
 public class TransactionController {
 
     @Value("${spring.kafka.topic.client_transactions}")

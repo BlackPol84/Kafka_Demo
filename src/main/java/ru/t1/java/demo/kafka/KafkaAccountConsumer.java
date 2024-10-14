@@ -29,10 +29,7 @@ public class KafkaAccountConsumer {
         log.debug("Account consumer: Обработка новых сообщений");
 
         try {
-            List<Account> accounts = messageList.stream()
-                    .map(mapper::toEntity)
-                    .toList();
-            service.registerAccounts(accounts);
+            service.registerAccounts(messageList);
         } finally {
             ack.acknowledge();
         }

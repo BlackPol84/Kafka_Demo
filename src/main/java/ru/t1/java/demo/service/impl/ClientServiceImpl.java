@@ -6,11 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.kafka.KafkaClientProducer;
+import ru.t1.java.demo.mapper.ClientMapper;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.service.ClientService;
-import ru.t1.java.demo.util.ClientMapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,15 +23,14 @@ import java.util.List;
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository repository;
-    private final KafkaClientProducer kafkaClientProducer;
     private final ClientMapper mapper;
 
     @Override
-    public void registerClients(List<Client> clients) {
-        repository.saveAll(clients)
-                .stream()
-                .map(Client::getId)
-                .forEach(kafkaClientProducer::send);
+    public void registerClients(List<ClientDto> clientDtos) {
+
+        List<Client> clients = clientDtos.stream()
+                .map(mapper::toEntity).toList();
+        repository.saveAll(clients);
     }
 
     @LogException

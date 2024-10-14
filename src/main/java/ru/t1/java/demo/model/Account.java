@@ -35,6 +35,4 @@ public class Account {
     @Column(name = "blocking")
     private boolean isBlocked;
 
-    @Column(name = "credit_limit")
-    private BigDecimal creditLimit;
 }
