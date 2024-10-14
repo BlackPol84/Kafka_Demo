@@ -33,10 +33,4 @@ public class ClientController {
         List<ClientDto> clientDtos = service.parseJson();
         clientDtos.forEach(dto -> kafkaClientProducer.sendTo(topic, dto));
     }
-
-//    @GetMapping("/admin")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public String adminAccess() {
-//        return "Admin Board.";
-//    }
 }

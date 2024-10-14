@@ -173,31 +173,29 @@ public class KafkaConfig {
         return handler;
     }
 
-    @Bean("idClient")
-    public KafkaTemplate<String, Long> kafkaTemplate
-            (ProducerFactory<String, Long> producerIdClientFactory) {
-        return new KafkaTemplate<>(producerIdClientFactory);
+    @Bean("idTransaction")
+    public KafkaTemplate<String, Long> idKafkaTemplate
+            (ProducerFactory<String, Long> producerIdTransactionFactory) {
+        return new KafkaTemplate<>(producerIdTransactionFactory);
     }
 
-    @Bean
-    @ConditionalOnProperty(name = "spring.kafka.producer.enable",
-            havingValue = "true",
-            matchIfMissing = true)
-    public KafkaClientProducer producerClient(@Qualifier("idClient")
-                                                  KafkaTemplate<String, Long> template,
-                                              @Qualifier("client") KafkaTemplate<String, ClientDto> clientKafkaTemplate) {
-        template.setDefaultTopic(clientTopic);
-        return new KafkaClientProducer(template, clientKafkaTemplate);
-    }
-
-    @Bean("idFactory")
-    public ProducerFactory<String, Long> producerIdClientFactory() {
+    @Bean("idTransactionFactory")
+    public ProducerFactory<String, Long> producerIdTransactionFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
         return new DefaultKafkaProducerFactory<>(props);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "spring.kafka.producer.enable",
+            havingValue = "true",
+            matchIfMissing = true)
+    public KafkaClientProducer producerClient
+            (@Qualifier("client") KafkaTemplate<String, ClientDto> clientKafkaTemplate) {
+        return new KafkaClientProducer(clientKafkaTemplate);
     }
 
     @Bean("client")

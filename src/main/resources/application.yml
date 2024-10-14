@@ -31,11 +31,11 @@ spring:
 
     topic:
       client_registration: t1_demo_client_registration
-      client_id_registered: t1_demo_client_registered
       client_account: t1_demo_client_account
       client_transactions: t1_demo_client_transactions
       metric_trace: t1_demo_metric_trace
       error_trace: t1_demo_error_trace
+      transaction-errors: t1_demo_client_transaction_errors
 
     listener:
       poll:

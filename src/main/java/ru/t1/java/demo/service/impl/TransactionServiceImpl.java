@@ -4,9 +4,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.t1.java.demo.kafka.KafkaIdTransactionProducer;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.Transaction;
@@ -25,9 +25,13 @@ import java.util.List;
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
+    @Value("${spring.kafka.topic.transaction-errors}")
+    private String topic;
+
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
+    private final KafkaIdTransactionProducer idTransactionProducer;
 
     @Transactional
     public void registerTransaction(List<TransactionDto> messageList) {
@@ -46,6 +50,8 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setClient(client);
             transaction.setAccount(account);
             transaction.setTransactionType(transactionDto.getTransactionType());
+
+            checkingAccount(transaction);
 
             switch (transaction.getTransactionType()) {
                 case WITHDRAW -> withdraw(account, transaction.getAmount());
@@ -100,5 +106,17 @@ public class TransactionServiceImpl implements TransactionService {
 
         accountRepository.save(account);
         transactionRepository.delete(lastTransaction);
+    }
+
+    private void checkingAccount(Transaction transaction) {
+
+        if(transaction.getAccount().isBlocked()) {
+            Transaction errorTransaction = transactionRepository.save(transaction);
+            idTransactionProducer.sendTo(topic, errorTransaction.getId());
+
+            log.debug("Transaction has not been completed, ID: {}", errorTransaction.getId());
+
+            throw new IllegalStateException("Account is blocked.");
+        }
     }
 }
