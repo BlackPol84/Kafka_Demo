@@ -10,5 +10,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     Optional<Transaction> findTopByAccountIdOrderByIdDesc(Long accountId);
 
-    List<Transaction> findTransactionByAccountIdAndProcessedFalse(Long accountId);
+    List<Transaction> findByAccountIdAndProcessedFalseOrderByIdAsc(Long accountId);
 }

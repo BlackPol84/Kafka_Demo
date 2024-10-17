@@ -3,6 +3,7 @@ package ru.t1.java.demo.config;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -129,11 +130,11 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConsumerFactory<String, TransactionDto> transactionConsumerListenerFactory() {
+    public ConsumerFactory<Long, TransactionDto> transactionConsumerListenerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, servers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, transactionGroupId);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, MessageDeserializer.class);
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "ru.t1.java.demo.model.dto.TransactionDto");
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
@@ -147,19 +148,29 @@ public class KafkaConfig {
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, MessageDeserializer.class.getName());
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, MessageDeserializer.class);
 
-        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<String, TransactionDto>(props);
-        factory.setKeyDeserializer(new StringDeserializer());
+        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<Long, TransactionDto>(props);
+        factory.setKeyDeserializer(new LongDeserializer());
 
         return factory;
     }
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, TransactionDto> transactionKafkaListenerContainerFactory
-            (@Qualifier("transactionConsumerListenerFactory") ConsumerFactory<String, TransactionDto> consumerFactory) {
-        ConcurrentKafkaListenerContainerFactory<String, TransactionDto> factory =
+    ConcurrentKafkaListenerContainerFactory<Long, TransactionDto> transactionKafkaListenerContainerFactory
+            (@Qualifier("transactionConsumerListenerFactory") ConsumerFactory<Long, TransactionDto> consumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<Long, TransactionDto> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factoryBuilder(consumerFactory, factory);
+        transactionFactoryBuilder(consumerFactory, factory);
         return factory;
+    }
+
+    private <T> void transactionFactoryBuilder(ConsumerFactory<Long, T> consumerFactory, ConcurrentKafkaListenerContainerFactory<Long, T> factory) {
+        factory.setConsumerFactory(consumerFactory);
+        factory.setBatchListener(true);
+        factory.setConcurrency(1);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        factory.getContainerProperties().setPollTimeout(listenerPollTimeout);
+        factory.getContainerProperties().setMicrometerEnabled(true);
+        factory.setCommonErrorHandler(errorHandler());
     }
 
     private CommonErrorHandler errorHandler() {

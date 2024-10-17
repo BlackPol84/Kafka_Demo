@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.t1.java.demo.kafka.KafkaFailedTransactionProducer;
 import ru.t1.java.demo.model.Account;
@@ -34,63 +35,85 @@ public class TransactionServiceImpl implements TransactionService {
     private final ClientRepository clientRepository;
     private final KafkaFailedTransactionProducer failedTransactionProducer;
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED) //default level with Postgres
     public void registerTransaction(List<TransactionDto> messageList) {
 
         for(TransactionDto transactionDto : messageList) {
 
-            Transaction transaction = new Transaction();
-            transaction.setAmount(transactionDto.getAmount());
+            try {
+                Transaction transaction = new Transaction();
+                transaction.setAmount(transactionDto.getAmount());
 
-            Client client = clientRepository.findById(transactionDto.getClientId())
-                    .orElseThrow(() -> new EntityNotFoundException("Client not found"));
+                Client client = clientRepository.findById(transactionDto.getClientId())
+                        .orElseThrow(() -> new EntityNotFoundException("Client not found"));
 
-            Account account = accountRepository.findById(transactionDto.getAccountId())
-                    .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+                Account account = accountRepository.findById(transactionDto.getAccountId())
+                        .orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
-            transaction.setClient(client);
-            transaction.setAccount(account);
-            transaction.setTransactionType(transactionDto.getTransactionType());
+                transaction.setClient(client);
+                transaction.setAccount(account);
+                transaction.setTransactionType(transactionDto.getTransactionType());
 
-            if(!checkingAccount(transaction)) {
-                continue;
+                if (!checkingAccount(transaction)) {
+                    continue;
+                }
+
+                switch (transaction.getTransactionType()) {
+                    case WITHDRAW -> withdraw(account, transaction.getAmount());
+                    case DEPOSIT -> deposit(account, transaction.getAmount());
+                    case CANCEL -> cancel(account.getId());
+                }
+
+                transactionRepository.save(transaction);
+                log.debug("Transaction is saved.");
+            } catch (Exception e) {
+                log.error("Failed to process transaction. Error: {}", e.getMessage());
             }
-
-            switch (transaction.getTransactionType()) {
-                case WITHDRAW -> withdraw(account, transaction.getAmount());
-                case DEPOSIT -> deposit(account, transaction.getAmount());
-                case CANCEL -> cancel(account.getId());
-            }
-
-        transactionRepository.save(transaction);
-        log.debug("Transaction is saved.");
         }
     }
 
-//    @Transactional
-//    public void processPendingTransactions(Long idUnblockedAccount) {
-//
-//        List<Transaction> pendingTransactions = transactionRepository
-//                .findTransactionByAccountIdAndProcessedFalse(idUnblockedAccount);
-//
-//        for(Transaction transaction : pendingTransactions) {
-//
-//
-//        }
-//    }
+    @Transactional(isolation = Isolation.READ_COMMITTED) //default level with Postgres
+    public void reprocessFailedTransactions(Long accountId) {
+
+        List<Transaction> failedTransactions = transactionRepository
+                .findByAccountIdAndProcessedFalseOrderByIdAsc(accountId);
+
+        for (Transaction transaction : failedTransactions) {
+            try {
+                Account account = accountRepository.findById(transaction.getAccount().getId())
+                        .orElseThrow(() -> new EntityNotFoundException("Account not found"));
+
+                if (checkingAccount(transaction)) {
+
+                    switch (transaction.getTransactionType()) {
+                        case WITHDRAW -> withdraw(account, transaction.getAmount());
+                        case DEPOSIT -> deposit(account, transaction.getAmount());
+                        case CANCEL -> cancel(account.getId());
+                    }
+
+                    transaction.setProcessed(true);
+                    transactionRepository.save(transaction);
+                    log.debug("Reprocessed transaction ID: {}", transaction.getId());
+                }
+            } catch (Exception e) {
+                log.error("Failed to reprocess transaction ID: {}. Error: {}"
+                        , transaction.getId(), e.getMessage());
+            }
+        }
+    }
 
     private void withdraw(Account account, BigDecimal amount) {
 
         BigDecimal newBalance = account.getBalance().subtract(amount);
 
-        if(newBalance.compareTo(BigDecimal.ZERO) < 0) {
+        if(newBalance.compareTo(BigDecimal.ZERO) >= 0) {
+            account.setBalance(newBalance);
+            accountRepository.save(account);
+
+        } else {
             log.error("Transaction for account {} would result in negative balance. " +
                             "Current balance: {}, Transaction amount: {}",
                     account.getId(), account.getBalance(), amount);
-            throw new IllegalArgumentException("Insufficient balance for transaction.");
-        } else {
-            account.setBalance(newBalance);
-            accountRepository.save(account);
         }
     }
 

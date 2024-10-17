@@ -7,4 +7,6 @@ import java.util.List;
 public interface TransactionService {
 
     void registerTransaction(List<TransactionDto> messageList);
+
+    void reprocessFailedTransactions(Long accountId);
 }
