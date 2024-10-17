@@ -26,13 +26,13 @@ public class KafkaAccountConsumer {
             containerFactory = "accountKafkaListenerContainerFactory")
     public void listener(@Payload List<AccountDto> messageList,
                          Acknowledgment ack) {
-        log.debug("Account consumer: Обработка новых сообщений");
+        log.debug("Account consumer: processing new messages");
 
         try {
             service.registerAccounts(messageList);
         } finally {
             ack.acknowledge();
         }
-        log.debug("Account consumer: записи обработаны");
+        log.debug("Account consumer: records have been processed");
     }
 }

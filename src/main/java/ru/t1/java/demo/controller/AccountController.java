@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.t1.java.demo.model.dto.FailedTransactionDto;
 import ru.t1.java.demo.model.dto.UnlockRequest;
 import ru.t1.java.demo.service.AccountService;
 
@@ -20,9 +21,9 @@ public class AccountController {
     private final AccountService service;
 
     @PostMapping()
-    public ResponseEntity<String> unlock(@RequestBody UnlockRequest unlockRequest) {
+    public ResponseEntity<String> unlock(@RequestBody FailedTransactionDto dto) {
 
-        String response = service.unlockAccount(unlockRequest.getAccountId());
+        String response = service.unlockAccount(dto.getAccountId());
 
         if("Unlocked".equals(response)) {
             return ResponseEntity.ok("Account unlocked");

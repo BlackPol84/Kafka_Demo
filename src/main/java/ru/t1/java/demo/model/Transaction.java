@@ -28,4 +28,7 @@ public class Transaction extends AbstractPersistable<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type")
     private TransactionType transactionType;
+
+    @Column(name = "processed")
+    private boolean processed;
 }

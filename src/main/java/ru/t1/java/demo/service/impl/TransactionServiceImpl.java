@@ -6,11 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.t1.java.demo.kafka.KafkaIdTransactionProducer;
+import ru.t1.java.demo.kafka.KafkaFailedTransactionProducer;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.Transaction;
 import ru.t1.java.demo.model.dto.TransactionDto;
+import ru.t1.java.demo.model.dto.FailedTransactionDto;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.repository.TransactionRepository;
@@ -31,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
-    private final KafkaIdTransactionProducer idTransactionProducer;
+    private final KafkaFailedTransactionProducer failedTransactionProducer;
 
     @Transactional
     public void registerTransaction(List<TransactionDto> messageList) {
@@ -51,7 +52,9 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setAccount(account);
             transaction.setTransactionType(transactionDto.getTransactionType());
 
-            checkingAccount(transaction);
+            if(!checkingAccount(transaction)) {
+                continue;
+            }
 
             switch (transaction.getTransactionType()) {
                 case WITHDRAW -> withdraw(account, transaction.getAmount());
@@ -63,6 +66,18 @@ public class TransactionServiceImpl implements TransactionService {
         log.debug("Transaction is saved.");
         }
     }
+
+//    @Transactional
+//    public void processPendingTransactions(Long idUnblockedAccount) {
+//
+//        List<Transaction> pendingTransactions = transactionRepository
+//                .findTransactionByAccountIdAndProcessedFalse(idUnblockedAccount);
+//
+//        for(Transaction transaction : pendingTransactions) {
+//
+//
+//        }
+//    }
 
     private void withdraw(Account account, BigDecimal amount) {
 
@@ -108,15 +123,24 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.delete(lastTransaction);
     }
 
-    private void checkingAccount(Transaction transaction) {
+    private boolean checkingAccount(Transaction transaction) {
 
         if(transaction.getAccount().isBlocked()) {
-            Transaction errorTransaction = transactionRepository.save(transaction);
-            idTransactionProducer.sendTo(topic, errorTransaction.getId());
 
-            log.debug("Transaction has not been completed, ID: {}", errorTransaction.getId());
+            log.warn("The account is blocked. Account ID: {}", transaction.getAccount().getId());
 
-            throw new IllegalStateException("Account is blocked.");
+            transaction.setProcessed(false);
+            transactionRepository.save(transaction);
+
+            FailedTransactionDto failedTransaction = new FailedTransactionDto();
+            failedTransaction.setOriginalTransactionId(transaction.getId());
+            failedTransaction.setAccountId(transaction.getAccount().getId());
+
+            failedTransactionProducer.sendTo(topic, failedTransaction);
+
+            return false;
         }
+
+        return true;
     }
 }

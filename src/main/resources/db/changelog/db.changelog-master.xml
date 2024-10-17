@@ -62,4 +62,14 @@ http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
         <rollback/>
     </changeSet>
 
+    <changeSet id="post-client" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/16-10-changelog-10.sql"/>
+        <rollback/>
+    </changeSet>
+
+    <changeSet id="post-account" author="PolOrlov">
+        <sqlFile encoding="utf8" path="/db/changelog/2024/10/16-10-changelog-11.sql"/>
+        <rollback/>
+    </changeSet>
+
 </databaseChangeLog>
