@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface AccountService {
 
-    void registerAccounts(List<Account> accounts);
+    void registerAccounts(List<AccountDto> accountDtos);
 
-    AccountDto create(AccountDto accountDto);
+    String unlockAccount(Long accountId);
+
 }

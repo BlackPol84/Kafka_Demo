@@ -30,9 +30,7 @@ public class KafkaClientConsumer {
         log.debug("Client consumer: Обработка новых сообщений");
 
         try {
-            List<Client> clients = messageList.stream()
-                    .map(mapper::toEntity).toList();
-            clientService.registerClients(clients);
+            clientService.registerClients(messageList);
 
             ack.acknowledge();
         } catch (Exception ex) {

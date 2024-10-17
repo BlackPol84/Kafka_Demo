@@ -6,7 +6,7 @@ import ru.t1.java.demo.model.dto.ClientDto;
 import java.util.List;
 
 public interface ClientService {
-    void registerClients(List<Client> clients);
+    void registerClients(List<ClientDto> clientDtos);
 
     List<ClientDto> parseJson();
 

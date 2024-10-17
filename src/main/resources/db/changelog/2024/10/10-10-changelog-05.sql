@@ -6,7 +6,4 @@ ALTER TABLE account
 ALTER TABLE account
     ADD COLUMN blocking BOOLEAN;
 
-ALTER TABLE account
-    ADD COLUMN credit_limit DECIMAL(19, 2);
-
 COMMIT;

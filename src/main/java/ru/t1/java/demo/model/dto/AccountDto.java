@@ -31,7 +31,4 @@ public class AccountDto {
     @JsonProperty("blocking")
     private boolean isBlocked;
 
-    @JsonProperty("credit_limit")
-    private BigDecimal creditLimit;
-
 }
