@@ -30,8 +30,10 @@ public class KafkaAccountConsumer {
 
         try {
             service.registerAccounts(messageList);
-        } finally {
             ack.acknowledge();
+
+        } catch (Exception ex) {
+            log.warn("Ошибка обработки сообщений: ", ex);
         }
         log.debug("Account consumer: records have been processed");
     }
