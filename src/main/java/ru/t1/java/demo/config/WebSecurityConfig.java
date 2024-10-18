@@ -61,9 +61,8 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/**").anonymous()
-                                .requestMatchers("/parse/**").anonymous()
                                 .requestMatchers("/parse").anonymous()
-                                .anyRequest().permitAll()
+                                .anyRequest().permitAll() //all other requests are also allowed without authentication
                 );
 
         http.authenticationProvider(authenticationProvider());
