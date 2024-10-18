@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.t1.java.demo.util.TransactionType;
+import ru.t1.java.demo.model.TransactionType;
 
 import java.math.BigDecimal;
 

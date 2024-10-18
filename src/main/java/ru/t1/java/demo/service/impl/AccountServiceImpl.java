@@ -13,7 +13,7 @@ import ru.t1.java.demo.model.dto.AccountDto;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.service.AccountService;
 import ru.t1.java.demo.service.TransactionService;
-import ru.t1.java.demo.util.AccountType;
+import ru.t1.java.demo.model.AccountType;
 
 import java.math.BigDecimal;
 import java.util.List;

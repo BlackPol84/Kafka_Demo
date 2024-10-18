@@ -17,7 +17,7 @@ import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.repository.TransactionRepository;
 import ru.t1.java.demo.service.TransactionService;
-import ru.t1.java.demo.util.TransactionType;
+import ru.t1.java.demo.model.TransactionType;
 
 import java.math.BigDecimal;
 import java.util.List;

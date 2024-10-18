@@ -2,11 +2,10 @@ package ru.t1.java.demo.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.t1.java.demo.util.AccountType;
+import ru.t1.java.demo.model.AccountType;
 
 import java.math.BigDecimal;
 
