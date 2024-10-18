@@ -1,5 +1,6 @@
 package ru.t1.java.demo.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class AccountController {
 
     @PostMapping()
     //@PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> unlock(@RequestBody FailedTransactionDto dto) {
+    public ResponseEntity<String> unlock(@Valid @RequestBody FailedTransactionDto dto) {
 
         String response = service.unlockAccount(dto.getAccountId());
 

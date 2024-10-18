@@ -28,6 +28,7 @@ public class KafkaTransactionConsumer {
         try {
             service.registerTransaction(messageList);
             ack.acknowledge();
+
         } catch (Exception ex) {
             log.error("Ошибка обработки сообщений: ", ex);
         }

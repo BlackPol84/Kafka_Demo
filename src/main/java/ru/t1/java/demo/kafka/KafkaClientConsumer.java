@@ -31,10 +31,10 @@ public class KafkaClientConsumer {
 
         try {
             clientService.registerClients(messageList);
-
             ack.acknowledge();
+
         } catch (Exception ex) {
-            log.error("Ошибка обработки сообщений: ", ex);
+            log.warn("Ошибка обработки сообщений: ", ex);
         }
         log.debug("Client consumer: записи обработаны");
     }
