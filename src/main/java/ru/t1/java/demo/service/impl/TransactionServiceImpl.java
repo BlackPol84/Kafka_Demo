@@ -16,8 +16,10 @@ import ru.t1.java.demo.model.dto.FailedTransactionDto;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.repository.TransactionRepository;
+import ru.t1.java.demo.service.ClientService;
 import ru.t1.java.demo.service.TransactionService;
 import ru.t1.java.demo.model.TransactionType;
+import ru.t1.java.demo.web.CheckWebClient;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,6 +36,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountRepository accountRepository;
     private final ClientRepository clientRepository;
     private final KafkaFailedTransactionProducer failedTransactionProducer;
+    private final ClientService clientService;
 
     @Transactional(isolation = Isolation.READ_COMMITTED) //default level with Postgres
     public void registerTransaction(List<TransactionDto> messageList) {
@@ -53,15 +56,17 @@ public class TransactionServiceImpl implements TransactionService {
                 transaction.setClient(client);
                 transaction.setAccount(account);
                 transaction.setTransactionType(transactionDto.getTransactionType());
+                transaction.setProcessed(false);
 
-                if (!checkingAccount(transaction)) {
-                    continue;
-                }
+                if (checkingAccount(transaction) && !clientService.isClientBlocked(client)) {
 
-                switch (transaction.getTransactionType()) {
-                    case WITHDRAW -> withdraw(account, transaction.getAmount());
-                    case DEPOSIT -> deposit(account, transaction.getAmount());
-                    case CANCEL -> cancel(account.getId());
+                    switch (transaction.getTransactionType()) {
+                        case WITHDRAW -> withdraw(account, transaction.getAmount());
+                        case DEPOSIT -> deposit(account, transaction.getAmount());
+                        case CANCEL -> cancel(account.getId());
+                    }
+
+                    transaction.setProcessed(true);
                 }
 
                 transactionRepository.save(transaction);
@@ -83,7 +88,8 @@ public class TransactionServiceImpl implements TransactionService {
                 Account account = accountRepository.findById(transaction.getAccount().getId())
                         .orElseThrow(() -> new EntityNotFoundException("Account not found"));
 
-                if (checkingAccount(transaction)) {
+                if (checkingAccount(transaction)
+                        && !clientService.isClientBlocked(transaction.getClient())) {
 
                     switch (transaction.getTransactionType()) {
                         case WITHDRAW -> withdraw(account, transaction.getAmount());
