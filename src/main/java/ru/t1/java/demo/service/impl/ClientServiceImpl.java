@@ -5,17 +5,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.t1.java.demo.aop.LogException;
-import ru.t1.java.demo.kafka.KafkaClientProducer;
 import ru.t1.java.demo.mapper.ClientMapper;
 import ru.t1.java.demo.model.Client;
+import ru.t1.java.demo.model.dto.CheckResponse;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.service.ClientService;
+import ru.t1.java.demo.web.CheckWebClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -24,13 +27,41 @@ public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository repository;
     private final ClientMapper mapper;
+    private final CheckWebClient checkWebClient;
 
     @Override
-    public void registerClients(List<ClientDto> clientDtos) {
+    public List<ClientDto> registerClients(List<ClientDto> clientDtos) {
 
-        List<Client> clients = clientDtos.stream()
-                .map(mapper::toEntity).toList();
-        repository.saveAll(clients);
+        List<Client> savedClients = new ArrayList<>();
+
+        for(ClientDto clientDto : clientDtos) {
+
+            Client client = mapper.toEntity(clientDto);
+            Client savedClient = repository.save(client);
+
+            log.debug("Client is registered: {}", savedClient);
+
+            savedClients.add(savedClient);
+        }
+
+        return savedClients.stream().map(mapper::toDto).toList();
+    }
+
+    @Override
+    public ClientDto registerClient(ClientDto clientDto) {
+
+        Client client = mapper.toEntity(clientDto);
+        Client savedClient = repository.save(client);
+
+        log.debug("Client is registered: {}", savedClient);
+
+        return mapper.toDto(savedClient);
+    }
+
+    public boolean isClientBlocked(Client client) {
+        Optional<CheckResponse> check = checkWebClient.check(client.getId());
+
+        return check.map(CheckResponse::getBlocked).orElse(false);
     }
 
     @LogException

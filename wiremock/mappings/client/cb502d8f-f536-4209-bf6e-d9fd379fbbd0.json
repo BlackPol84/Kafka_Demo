@@ -1,0 +1,53 @@
+{
+  "id" : "cb502d8f-f536-4209-bf6e-d9fd379fbbd0",
+  "name" : "blocked_false",
+  "request" : {
+    "url" : "/api/client/check",
+    "method" : "POST"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\n\"blocked\" : \"false\"\n}",
+    "headers" : {
+      "Content-Type" : "application/json"
+    }
+  },
+  "uuid" : "cb502d8f-f536-4209-bf6e-d9fd379fbbd0",
+  "persistent" : true,
+  "priority" : 0,
+  "scenarioName" : "client",
+  "requiredScenarioState" : "Started",
+  "metadata" : {
+    "proxyUrlPrefixToRemove" : "",
+    "proxyEnable" : false,
+    "proxyBaseUrl" : "http://",
+    "proxyResponseHeaders" : {
+      "Content-Type" : "application/json"
+    },
+    "responseHeaders" : {
+      "Content-Type" : "application/json"
+    },
+    "csvTableHeader" : "",
+    "csvMQTableHeader" : "",
+    "isCSV" : false,
+    "isMqCSV" : false,
+    "isAsyncCsv" : [ false ]
+  },
+  "insertionIndex" : 1,
+  "postServeActions" : [ {
+    "name" : "asyncAction",
+    "parameters" : {
+      "mqAsyncAction" : false,
+      "isAsyncAction" : false,
+      "httpResponse" : [ {
+        "asyncEnabled" : false,
+        "responseDefinition" : {
+          "headers" : {
+            "Content-Type" : [ "application/json" ]
+          }
+        }
+      } ],
+      "mqResponse" : { }
+    }
+  } ]
+}
