@@ -11,7 +11,11 @@ import java.math.BigDecimal;
 @Setter
 @Entity
 @Table(name = "transaction")
-public class Transaction extends AbstractPersistable<Long> {
+public class Transaction {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "amount", precision = 19, scale = 2)
     private BigDecimal amount;

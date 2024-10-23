@@ -22,6 +22,7 @@ public class CheckWebClient extends BaseWebClient {
     public Optional<CheckResponse> check(Long id) {
         log.debug("Starting a request with an id {}", id);
         ResponseEntity<CheckResponse> post = null;
+
         try {
             CheckRequest request = CheckRequest.builder()
                     .clientId(id)
@@ -31,7 +32,6 @@ public class CheckWebClient extends BaseWebClient {
                     uriBuilder -> uriBuilder.path(resource).build(),
                     request,
                     CheckResponse.class);
-
 
         } catch (Exception httpStatusException) {
             log.error("Error when executing a request with an id {}: {}",

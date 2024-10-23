@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.t1.java.demo.mapper.AccountMapper;
 import ru.t1.java.demo.model.Account;
+import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.dto.AccountDto;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.service.AccountService;
@@ -16,7 +17,9 @@ import ru.t1.java.demo.service.TransactionService;
 import ru.t1.java.demo.model.AccountType;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -27,13 +30,20 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper mapper;
     private final TransactionService transactionService;
 
-    public void registerAccounts(List<AccountDto> messageList) {
+    public List<AccountDto> registerAccounts(List<AccountDto> accountDtos) {
 
-        List<Account> accounts = messageList.stream()
+        if (accountDtos == null || accountDtos.isEmpty()) {
+            log.warn("AccountDtos list is null or empty");
+            return Collections.emptyList();
+        }
+
+        List<Account> accounts = accountDtos.stream()
                 .map(mapper::toEntity)
-                .toList();
+                .filter(Objects::nonNull).toList();
 
-        repository.saveAll(accounts);
+        List<Account> savedAccounts = repository.saveAll(accounts);
+
+        return savedAccounts.stream().map(mapper::toDto).toList();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED) //default level with Postgres
@@ -65,6 +75,5 @@ public class AccountServiceImpl implements AccountService {
         }
 
         return "Account is not blocked";
-
     }
 }
