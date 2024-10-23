@@ -15,10 +15,7 @@ import ru.t1.java.demo.web.CheckWebClient;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -32,19 +29,20 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<ClientDto> registerClients(List<ClientDto> clientDtos) {
 
-        List<Client> savedClients = new ArrayList<>();
-
-        for(ClientDto clientDto : clientDtos) {
-
-            Client client = mapper.toEntity(clientDto);
-            Client savedClient = repository.save(client);
-
-            log.debug("Client is registered: {}", savedClient);
-
-            savedClients.add(savedClient);
+        if (clientDtos == null || clientDtos.isEmpty()) {
+            log.warn("ClientDto list is null or empty");
+            return Collections.emptyList();
         }
 
-        return savedClients.stream().map(mapper::toDto).toList();
+        List<Client> clients = clientDtos.stream()
+                .map(mapper::toEntity)
+                .filter(Objects::nonNull).toList();
+
+        List<Client> savedClients = repository.saveAll(clients);
+
+        log.debug("Successfully registered {} clients", savedClients.size());
+
+        return clients.stream().map(mapper::toDto).toList();
     }
 
     @Override
