@@ -28,7 +28,7 @@ public class Account {
     @Column(name = "account_type")
     private AccountType type;
 
-    @Column(name = "balance")
+    @Column(name = "balance", precision = 19, scale = 2)
     private BigDecimal balance;
 
     @Column(name = "blocking")
