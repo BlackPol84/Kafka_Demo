@@ -48,12 +48,19 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientDto registerClient(ClientDto clientDto) {
 
-        Client client = mapper.toEntity(clientDto);
-        Client savedClient = repository.save(client);
+        if(clientDto != null) {
 
-        log.debug("Client is registered: {}", savedClient);
+            Client client = mapper.toEntity(clientDto);
+            Client savedClient = repository.save(client);
 
-        return mapper.toDto(savedClient);
+            log.debug("Client is registered: {}", savedClient);
+
+            return mapper.toDto(savedClient);
+        }
+
+        log.warn("Client is null");
+
+        return null;
     }
 
     public boolean isClientBlocked(Client client) {
