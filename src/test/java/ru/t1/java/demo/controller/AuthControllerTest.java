@@ -94,7 +94,4 @@ public class AuthControllerTest extends AbstractIntegrationTestInitializer {
                 .andExpect(jsonPath("$.accessToken").value(Matchers.matchesRegex("^[A-Za-z0-9.\\-_]+\\.[A-Za-z0-9.\\-_]+\\.[A-Za-z0-9.\\-_]+$")))
                 .andExpect(jsonPath("$.tokenType").value("Bearer"));
     }
-
-
-
 }

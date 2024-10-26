@@ -1,4 +1,4 @@
-package ru.t1.java.demo.service;
+package ru.t1.java.demo.service.impl;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import ru.t1.java.demo.model.dto.TransactionDto;
 import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.repository.TransactionRepository;
+import ru.t1.java.demo.service.ClientService;
 import ru.t1.java.demo.service.impl.TransactionServiceImpl;
 
 import java.math.BigDecimal;
