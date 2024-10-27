@@ -18,16 +18,16 @@ import static org.mockito.Mockito.*;
 public class KafkaClientConsumerTest {
 
     @InjectMocks
-    private KafkaClientConsumer kafkaClientConsumer;
+    private KafkaClientConsumer consumer;
 
     @Mock
-    private ClientService clientService;
+    private ClientService service;
 
     @Mock
     private Acknowledgment acknowledgment;
 
     @Test
-    public void listener_validMessageList() {
+    public void listener_WithValidMessageList_ShouldAcknowledge() {
 
         ClientDto client1 = new ClientDto();
         client1.setFirstName("John");
@@ -41,45 +41,45 @@ public class KafkaClientConsumerTest {
 
         List<ClientDto> clientDtos = List.of(client1, client2);
 
-        kafkaClientConsumer.listener(clientDtos, acknowledgment);
+        consumer.listener(clientDtos, acknowledgment);
 
-        verify(clientService, times(1)).registerClients(clientDtos);
+        verify(service, times(1)).registerClients(clientDtos);
         verify(acknowledgment, times(1)).acknowledge();
     }
 
     @Test
-    public void listener_messageProcessingError() {
+    public void listener_WhenServiceThrowsException_ShouldNotAcknowledge() {
 
         ClientDto client1 = new ClientDto();
         ClientDto client2 = new ClientDto();
 
         List<ClientDto> clientDtos = List.of(client1, client2);
 
-        doThrow(new RuntimeException("Processing error")).when(clientService).registerClients(anyList());
+        doThrow(new RuntimeException("Processing error")).when(service).registerClients(anyList());
 
-        kafkaClientConsumer.listener(clientDtos, acknowledgment);
+        consumer.listener(clientDtos, acknowledgment);
 
-        verify(clientService, times(1)).registerClients(clientDtos);
+        verify(service, times(1)).registerClients(clientDtos);
         verify(acknowledgment, never()).acknowledge();
     }
 
     @Test
-    public void listener_emptyMessageList() {
+    public void listener_EmptyMessageList_ShouldAcknowledge() {
 
         List<ClientDto> clientDtos = List.of();
 
-        kafkaClientConsumer.listener(clientDtos, acknowledgment);
+        consumer.listener(clientDtos, acknowledgment);
 
-        verify(clientService, times(1)).registerClients(clientDtos);
+        verify(service, times(1)).registerClients(clientDtos);
         verify(acknowledgment, times(1)).acknowledge();
     }
 
     @Test
-    public void listener_nullMessageList() {
+    public void listener_NullMessageList_ShouldAcknowledge() {
 
-        kafkaClientConsumer.listener(null, acknowledgment);
+        consumer.listener(null, acknowledgment);
 
-        verify(clientService, times(1)).registerClients(null);
+        verify(service, times(1)).registerClients(null);
         verify(acknowledgment, times(1)).acknowledge();
     }
 }
