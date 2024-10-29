@@ -11,15 +11,27 @@ import ru.t1.java.demo.model.dto.ClientDto;
 @Component
 public class KafkaClientProducer {
 
-    private final KafkaTemplate<String, ClientDto> clientKafkaTemplate;
+    private final KafkaTemplate<String, ClientDto> template;
 
     public void sendTo(String topic, ClientDto dto) {
+
+        validateInputs(topic, dto);
+
         try {
-            clientKafkaTemplate.send(topic, dto).get();
-            clientKafkaTemplate.flush();
+            template.send(topic, dto).get();
+            template.flush();
             log.debug("dto send: {}", dto.getId());
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
+        }
+    }
+
+    private void validateInputs(String topic, ClientDto dto) {
+        if (topic == null || topic.trim().isEmpty()) {
+            throw new IllegalArgumentException("Topic must not be null or empty");
+        }
+        if (dto == null) {
+            throw new IllegalArgumentException("ClientDto must not be null");
         }
     }
 }

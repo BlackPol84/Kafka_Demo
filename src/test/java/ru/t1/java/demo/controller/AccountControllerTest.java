@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.t1.java.demo.model.dto.FailedTransactionDto;
 import ru.t1.java.demo.service.AccountService;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -53,6 +52,7 @@ public class AccountControllerTest {
 
     @Test
     public void unlock_InsufficientFunds() throws Exception {
+
         FailedTransactionDto dto = new FailedTransactionDto();
         dto.setOriginalTransactionId(1L);
         dto.setAccountId(1L);
