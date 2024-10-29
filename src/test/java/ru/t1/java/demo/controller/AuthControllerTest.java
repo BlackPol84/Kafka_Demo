@@ -34,7 +34,8 @@ public class AuthControllerTest extends AbstractIntegrationTestInitializer {
 
     @BeforeEach
     public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(authController)
+                .setControllerAdvice(new ExceptionController()).build();
     }
 
     @AfterEach
@@ -46,20 +47,20 @@ public class AuthControllerTest extends AbstractIntegrationTestInitializer {
 
     @Test
     @Sql(scripts = "classpath:db/create-role.sql")
-    void registerUser_registeredSuccessfully() throws Exception {
+    void registerUser_whenValidSignupRequest_returnUserRegisteredMessage() throws Exception {
 
         Set<String> roles = new HashSet<>();
         roles.add("ROLE_ADMIN");
 
-        SignupRequest signUpRequest = new SignupRequest();
-        signUpRequest.setUsername("BradPitt");
-        signUpRequest.setEmail("Pitt12@gmaile.com");
-        signUpRequest.setPassword("12345678");
-        signUpRequest.setRole(roles);
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUsername("Brad");
+        signupRequest.setEmail("Pitt12@gmaile.com");
+        signupRequest.setPassword("12345678");
+        signupRequest.setRole(roles);
 
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(signUpRequest)))
+                .content(new ObjectMapper().writeValueAsString(signupRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content()
                 .string("{\"message\":\"User registered successfully!\"}"));
@@ -67,18 +68,18 @@ public class AuthControllerTest extends AbstractIntegrationTestInitializer {
 
     @Test
     @Sql(scripts = "classpath:db/create-role.sql")
-    void authenticateUser_authenticateSuccessfully() throws Exception {
+    void authenticateUser_whenValidLoginRequest_returnJwtResponse() throws Exception {
 
         Set<String> roles = new HashSet<>();
         roles.add("ROLE_ADMIN");
 
-        SignupRequest signUpRequest = new SignupRequest();
-        signUpRequest.setUsername("JohnDoe");
-        signUpRequest.setEmail("John12@gmaile.com");
-        signUpRequest.setPassword("12345Password");
-        signUpRequest.setRole(roles);
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUsername("JohnDoe");
+        signupRequest.setEmail("John12@gmaile.com");
+        signupRequest.setPassword("12345Password");
+        signupRequest.setRole(roles);
 
-        authController.registerUser(signUpRequest);
+        authController.registerUser(signupRequest);
 
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("JohnDoe");
@@ -91,7 +92,97 @@ public class AuthControllerTest extends AbstractIntegrationTestInitializer {
                 .andExpect(jsonPath("$.username").value("JohnDoe"))
                 .andExpect(jsonPath("$.email").value("John12@gmaile.com"))
                 .andExpect(jsonPath("$.roles[0]").value("ROLE_ADMIN"))
-                .andExpect(jsonPath("$.accessToken").value(Matchers.matchesRegex("^[A-Za-z0-9.\\-_]+\\.[A-Za-z0-9.\\-_]+\\.[A-Za-z0-9.\\-_]+$")))
+                .andExpect(jsonPath("$.accessToken").value(Matchers.matchesRegex
+                        ("^[A-Za-z0-9.\\-_]+\\.[A-Za-z0-9.\\-_]+\\.[A-Za-z0-9.\\-_]+$")))
                 .andExpect(jsonPath("$.tokenType").value("Bearer"));
+    }
+
+    @Test
+    @Sql(scripts = "classpath:db/create-role.sql")
+    void registerUser_whenUserExists_returnMessageError() throws Exception {
+
+        Set<String> roles = new HashSet<>();
+        roles.add("ROLE_ADMIN");
+
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUsername("Brad");
+        signupRequest.setEmail("Pitt12@gmaile.com");
+        signupRequest.setPassword("12345678");
+        signupRequest.setRole(roles);
+
+        authController.registerUser(signupRequest);
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(signupRequest)))
+                        .andExpect(status().isBadRequest())
+                        .andExpect(content()
+                        .string("{\"message\":\"Error: Username is already taken!\"}"));
+    }
+
+    @Test
+    @Sql(scripts = "classpath:db/create-role.sql")
+    void registerUser_whenEmailExists_returnMessageError() throws Exception {
+
+        Set<String> roles = new HashSet<>();
+        roles.add("ROLE_ADMIN");
+
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUsername("Brad");
+        signupRequest.setEmail("Pitt12@gmaile.com");
+        signupRequest.setPassword("12345678");
+        signupRequest.setRole(roles);
+
+        authController.registerUser(signupRequest);
+
+        SignupRequest signupRequest2 = new SignupRequest();
+        signupRequest2.setUsername("James");
+        signupRequest2.setEmail("Pitt12@gmaile.com");
+        signupRequest2.setPassword("12345678");
+        signupRequest2.setRole(roles);
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(signupRequest2)))
+                        .andExpect(status().isBadRequest())
+                        .andExpect(content()
+                        .string("{\"message\":\"Error: Email is already in use!\"}"));
+    }
+
+    @Test
+    @Sql(scripts = "classpath:db/create-user-role.sql")
+    void registerUser_whenSetRoleNull_returnUserRegisteredMessage() throws Exception {
+
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUsername("Brad");
+        signupRequest.setEmail("Pitt12@gmaile.com");
+        signupRequest.setPassword("12345678");
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(signupRequest)))
+                        .andExpect(status().isOk())
+                        .andExpect(content()
+                        .string("{\"message\":\"User registered successfully!\"}"));
+    }
+
+    @Test
+    void registerUser_whenRoleNotExists_returnMessageError() throws Exception {
+
+        Set<String> roles = new HashSet<>();
+        roles.add("ROLE_USER");
+
+        SignupRequest signupRequest = new SignupRequest();
+        signupRequest.setUsername("Brad");
+        signupRequest.setEmail("Pitt12@gmaile.com");
+        signupRequest.setPassword("12345678");
+        signupRequest.setRole(roles);
+
+        mockMvc.perform(post("/api/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(signupRequest)))
+                        .andExpect(status().isInternalServerError())
+                        .andExpect(jsonPath("$.message")
+                                .value("Error: Role is not found."));
     }
 }

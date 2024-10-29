@@ -23,15 +23,15 @@ public class KafkaTransactionConsumer {
             containerFactory = "transactionKafkaListenerContainerFactory")
     public void listener(@Payload List<TransactionDto> messageList,
                          Acknowledgment ack) {
-        log.debug("Transaction consumer: Обработка новых сообщений");
+        log.debug("Transaction consumer: Processing new messages");
 
         try {
             service.registerTransaction(messageList);
             ack.acknowledge();
 
         } catch (Exception ex) {
-            log.error("Ошибка обработки сообщений: ", ex);
+            log.error("Message processing error: ", ex);
         }
-        log.debug("Transaction consumer: записи обработаны");
+        log.debug("Transaction consumer: records have been processed");
     }
 }
