@@ -55,21 +55,21 @@ public class KafkaClientProducerTest {
         clientDto.setLastName("Doe");
         clientDto.setMiddleName("Middle");
 
-        IllegalArgumentException thrown =
+        IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () -> {
                     producer.sendTo(null, clientDto);
                 });
-        assertEquals("Topic must not be null or empty", thrown.getMessage());
+        assertEquals("Topic must not be null or empty", exception.getMessage());
     }
 
     @Test
     public void sendTo_whenNullDto_returnException() {
 
-        IllegalArgumentException thrown =
+        IllegalArgumentException exception =
                 assertThrows(IllegalArgumentException.class, () -> {
                     producer.sendTo(topic, null);
                 });
-        assertEquals("ClientDto must not be null", thrown.getMessage());
+        assertEquals("ClientDto must not be null", exception.getMessage());
     }
 
     @Test
