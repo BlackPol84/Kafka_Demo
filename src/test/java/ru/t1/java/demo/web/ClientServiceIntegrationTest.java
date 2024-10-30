@@ -18,7 +18,7 @@ public class ClientServiceIntegrationTest {
     }
 
     @Test
-    void checkWebClient_isClientNotBlocked() {
+    void checkWebClient_whenClientNotBlocked_thenResponseFalse() {
 
         CheckResponse response = client.post().uri("/bsc-wire-mock/api/client/check")
                 .exchange().expectStatus().isOk()
@@ -29,8 +29,13 @@ public class ClientServiceIntegrationTest {
     }
 
     @Test
-    void checkWebClient_ifCheckResponseNull() {
+    void checkWebClient_whenClientBlocked_thenResponseTrue() {
 
+        CheckResponse response = client.post().uri("/bsc-wire-mock/api/client/check-true")
+                .exchange().expectStatus().isOk()
+                .expectBody(CheckResponse.class).returnResult().getResponseBody();
 
+        assertNotNull(response);
+        assertEquals(true, response.getBlocked());
     }
 }
