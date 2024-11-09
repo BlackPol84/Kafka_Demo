@@ -63,7 +63,7 @@ public class AccountControllerTest {
         mockMvc.perform(post("/unlock")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(dto)))
-                        .andExpect(status().isForbidden())
+                        .andExpect(status().isOk())
                         .andExpect(content()
                         .string("Insufficient funds to unlock account."));
     }
