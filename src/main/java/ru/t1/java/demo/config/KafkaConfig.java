@@ -70,10 +70,7 @@ public class KafkaConfig {
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, MessageDeserializer.class.getName());
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, MessageDeserializer.class);
 
-        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<String, ClientDto>(props);
-        factory.setKeyDeserializer(new StringDeserializer());
-
-        return factory;
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
@@ -114,10 +111,7 @@ public class KafkaConfig {
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, MessageDeserializer.class.getName());
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, MessageDeserializer.class);
 
-        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<String, AccountDto>(props);
-        factory.setKeyDeserializer(new StringDeserializer());
-
-        return factory;
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
@@ -148,10 +142,7 @@ public class KafkaConfig {
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, MessageDeserializer.class.getName());
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, MessageDeserializer.class);
 
-        DefaultKafkaConsumerFactory factory = new DefaultKafkaConsumerFactory<Long, TransactionDto>(props);
-        factory.setKeyDeserializer(new LongDeserializer());
-
-        return factory;
+        return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
@@ -177,7 +168,7 @@ public class KafkaConfig {
         DefaultErrorHandler handler = new DefaultErrorHandler(new FixedBackOff(1000, 3));
         handler.addNotRetryableExceptions(IllegalStateException.class);
         handler.setRetryListeners((record, ex, deliveryAttempt) ->
-                log.error(" RetryListeners message = {}, offset = {} deliveryAttempt = {}",
+                log.error("RetryListeners message = {}, offset = {} deliveryAttempt = {}",
                         ex.getMessage(), record.offset(), deliveryAttempt));
         return handler;
     }
@@ -195,6 +186,7 @@ public class KafkaConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+
         return new DefaultKafkaProducerFactory<>(props);
     }
 
@@ -211,6 +203,7 @@ public class KafkaConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+
         return new DefaultKafkaProducerFactory<>(props);
     }
 
@@ -227,6 +220,7 @@ public class KafkaConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+
         return new DefaultKafkaProducerFactory<>(props);
     }
 
@@ -243,6 +237,7 @@ public class KafkaConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, false);
+
         return new DefaultKafkaProducerFactory<>(props);
     }
 }

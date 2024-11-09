@@ -31,8 +31,7 @@ public class AccountController {
             return ResponseEntity.ok("Account unlocked");
 
         } else if ("Insufficient funds to unlock".equals(response)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("Insufficient funds to unlock account.");
+            return ResponseEntity.ok("Insufficient funds to unlock account.");
 
         } else {
             return ResponseEntity.ok("Account is not blocked.");

@@ -9,7 +9,6 @@ import org.springframework.kafka.support.Acknowledgment;
 import ru.t1.java.demo.model.AccountType;
 import ru.t1.java.demo.model.dto.AccountDto;
 import ru.t1.java.demo.service.AccountService;
-import ru.t1.java.demo.service.impl.AccountServiceImpl;
 
 import java.math.BigDecimal;
 import java.util.Collections;
